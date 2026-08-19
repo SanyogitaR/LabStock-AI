@@ -1,0 +1,92 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-5 col-md-7 col-sm-9">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <i class="bi bi-box-arrow-in-right fs-1 mb-2 d-block"></i>
+                    <h2 class="mb-0">Login</h2>
+                    <p class="mb-0 mt-2">Welcome back to Inventory Management</p>
+                </div>
+                <div class="card-body p-4">
+                    <form id="account" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.Email" class="form-label">
+                                <i class="bi bi-envelope"></i> Email Address
+                            </label>
+                            <input asp-for="Input.Email" class="form-control form-control-lg" autocomplete="username" placeholder="Enter your email" aria-required="true" />
+                            <span asp-validation-for="Input.Email" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Input.Password" class="form-label">
+                                <i class="bi bi-lock"></i> Password
+                            </label>
+                            <input asp-for="Input.Password" class="form-control form-control-lg" autocomplete="current-password" placeholder="Enter your password" aria-required="true" />
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" asp-for="Input.RememberMe" />
+                                <label class="form-check-label" asp-for="Input.RememberMe">
+                                    Remember me on this device
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid mb-3">
+                            <button id="login-submit" type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right"></i> Log In
+                            </button>
+                        </div>
+                        
+                        <div class="text-center">
+                            <a id="forgot-password" asp-page="./ForgotPassword" class="text-decoration-none">
+                                <i class="bi bi-question-circle"></i> Forgot your password?
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="mb-0">
+                        Don't have an account? 
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="fw-bold text-decoration-none">
+                            Register here
+                        </a>
+                    </p>
+                </div>
+            </div>
+            
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="card shadow border-0 mt-3">
+                    <div class="card-body">
+                        <h6 class="text-center text-muted mb-3">Or sign in with</h6>
+                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                            <div class="d-grid gap-2">
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-outline-secondary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+                                        <i class="bi bi-box-arrow-in-right"></i> @provider.DisplayName
+                                    </button>
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

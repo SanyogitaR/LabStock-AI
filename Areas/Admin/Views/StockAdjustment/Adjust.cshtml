@@ -1,0 +1,262 @@
+@model StockAdjustmentVM
+@{
+    ViewData["Title"] = "Adjust Stock";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="bi bi-arrow-left-right"></i> Adjust Stock
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Supply Info -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">@Model.SupplyName</h5>
+                        <p class="mb-0">
+                            <strong>Current Stock:</strong> 
+                            <span class="badge bg-primary fs-6">@Model.CurrentQuantity units</span>
+                        </p>
+                    </div>
+
+                    <form asp-action="Adjust" method="post" id="adjustForm">
+                        <input type="hidden" asp-for="SupplyID" />
+                        <input type="hidden" asp-for="SupplyName" />
+                        <input type="hidden" asp-for="CurrentQuantity" />
+                        <input type="hidden" asp-for="PurchaseOrderID" id="purchaseOrderHidden" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Adjustment Type -->
+                        <div class="mb-3">
+                            <label asp-for="AdjustmentType" class="form-label fw-bold"></label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" asp-for="AdjustmentType" value="Add" id="typeAdd" checked />
+                                <label class="btn btn-outline-success" for="typeAdd">
+                                    <i class="bi bi-plus-circle"></i> Add Stock
+                                </label>
+
+                                <input type="radio" class="btn-check" asp-for="AdjustmentType" value="Remove" id="typeRemove" />
+                                <label class="btn btn-outline-danger" for="typeRemove">
+                                    <i class="bi bi-dash-circle"></i> Remove Stock
+                                </label>
+                            </div>
+                            <span asp-validation-for="AdjustmentType" class="text-danger"></span>
+                        </div>
+
+                        <!-- Quantity -->
+                        <div class="mb-3">
+                            <label asp-for="Quantity" class="form-label fw-bold"></label>
+                            <input asp-for="Quantity" class="form-control form-control-lg" 
+                                   placeholder="Enter quantity" min="1" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+
+                        <!-- Reason -->
+                        <div class="mb-3">
+                            <label asp-for="Reason" class="form-label fw-bold"></label>
+                            <select asp-for="Reason" class="form-select" id="reasonSelect">
+                                <option value="">-- Select Reason --</option>
+                                <option value="Purchase Order Received">Purchase Order Received</option>
+                                <option value="Stock Count Correction">Stock Count Correction</option>
+                                <option value="Damaged Items">Damaged Items</option>
+                                <option value="Expired Items">Expired Items</option>
+                                <option value="Usage/Consumption">Usage/Consumption</option>
+                                <option value="Transfer">Transfer</option>
+                                <option value="Return to Supplier">Return to Supplier</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <textarea asp-for="Reason" class="form-control mt-2 d-none" 
+                                      id="reasonTextarea" rows="3" 
+                                      placeholder="Enter reason for adjustment"></textarea>
+                            <span asp-validation-for="Reason" class="text-danger"></span>
+                        </div>
+
+                        <!-- Purchase Order Selection (shown when reason is "Purchase Order Received") -->
+                        <div class="mb-3 d-none" id="purchaseOrderSection">
+                            <label asp-for="PurchaseOrderID" class="form-label fw-bold"></label>
+                            <select asp-for="PurchaseOrderID" class="form-select" id="purchaseOrderSelect">
+                                <option value="">-- Select Purchase Order (Optional) --</option>
+                                @if (ViewBag.PurchaseOrders != null)
+                                {
+                                    @foreach (var po in ViewBag.PurchaseOrders)
+                                    {
+                                        <option value="@po.OrderID" 
+                                                data-ordered="@po.QuantityOrdered" 
+                                                data-received="@po.QuantityReceived"
+                                                data-remaining="@po.QuantityRemaining">
+                                            PO #@po.OrderID - Ordered: @po.QuantityOrdered, Received: @po.QuantityReceived, Remaining: @po.QuantityRemaining
+                                        </option>
+                                    }
+                                }
+                            </select>
+                            <small class="text-muted">Optional: Select the purchase order being received</small>
+                            <div class="alert alert-info mt-2 d-none" id="poInfo">
+                                <strong>Selected PO:</strong>
+                                <span id="poDetails"></span>
+                            </div>
+                        </div>
+
+                        <!-- Reference -->
+                        <div class="mb-4">
+                            <label asp-for="Reference" class="form-label fw-bold"></label>
+                            <input asp-for="Reference" class="form-control" 
+                                   placeholder="Invoice #, PO #, etc. (optional)" />
+                            <span asp-validation-for="Reference" class="text-danger"></span>
+                        </div>
+
+                        <!-- Preview -->
+                        <div class="alert alert-secondary" id="preview">
+                            <strong>Preview:</strong>
+                            <p class="mb-0" id="previewText">
+                                Current: <strong>@Model.CurrentQuantity</strong> → 
+                                New: <strong id="newQuantity">@Model.CurrentQuantity</strong>
+                            </p>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-fill">
+                                <i class="bi bi-check-circle"></i> Confirm Adjustment
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        const currentQuantity = @Model.CurrentQuantity;
+        
+        // Update preview
+        function updatePreview() {
+            const quantity = parseInt(document.querySelector('[name="Quantity"]').value) || 0;
+            const type = document.querySelector('[name="AdjustmentType"]:checked').value;
+            let newQty = currentQuantity;
+            
+            if (type === 'Add') {
+                newQty = currentQuantity + quantity;
+            } else {
+                newQty = currentQuantity - quantity;
+            }
+            
+            document.getElementById('newQuantity').textContent = newQty;
+            
+            // Color coding
+            const preview = document.getElementById('preview');
+            preview.classList.remove('alert-success', 'alert-danger', 'alert-warning', 'alert-secondary');
+            
+            if (newQty < 0) {
+                preview.classList.add('alert-danger');
+            } else if (newQty === 0) {
+                preview.classList.add('alert-warning');
+            } else if (type === 'Add') {
+                preview.classList.add('alert-success');
+            } else {
+                preview.classList.add('alert-secondary');
+            }
+        }
+        
+        // Event listeners
+        document.querySelector('[name="Quantity"]').addEventListener('input', updatePreview);
+        document.querySelectorAll('[name="AdjustmentType"]').forEach(radio => {
+            radio.addEventListener('change', updatePreview);
+        });
+        
+        // Handle reason selection
+        document.getElementById('reasonSelect').addEventListener('change', function() {
+            const textarea = document.getElementById('reasonTextarea');
+            const select = this;
+            const poSection = document.getElementById('purchaseOrderSection');
+            
+            if (this.value === 'Other') {
+                textarea.classList.remove('d-none');
+                select.classList.add('d-none');
+                textarea.value = '';
+                textarea.focus();
+                poSection.classList.add('d-none');
+            } else {
+                textarea.value = this.value;
+                
+                // Show PO section if "Purchase Order Received" is selected
+                if (this.value === 'Purchase Order Received') {
+                    poSection.classList.remove('d-none');
+                    // Force adjustment type to "Add" and disable Remove option
+                    document.getElementById('typeAdd').checked = true;
+                    document.getElementById('typeRemove').disabled = true;
+                    updatePreview();
+                } else {
+                    poSection.classList.add('d-none');
+                    // Re-enable Remove option when not receiving PO
+                    document.getElementById('typeRemove').disabled = false;
+                }
+            }
+        });
+        
+        // Handle purchase order selection
+        document.getElementById('purchaseOrderSelect').addEventListener('change', function() {
+            const poInfo = document.getElementById('poInfo');
+            const poDetails = document.getElementById('poDetails');
+            const hiddenField = document.getElementById('purchaseOrderHidden');
+            
+            if (this.value) {
+                const option = this.options[this.selectedIndex];
+                const ordered = option.getAttribute('data-ordered');
+                const received = option.getAttribute('data-received');
+                const remaining = option.getAttribute('data-remaining');
+                
+                poDetails.innerHTML = `Ordered: <strong>${ordered}</strong>, Received: <strong>${received}</strong>, Remaining: <strong>${remaining}</strong>`;
+                poInfo.classList.remove('d-none');
+                
+                // Update hidden field with PO ID
+                hiddenField.value = this.value;
+                
+                // Suggest the remaining quantity
+                document.querySelector('[name="Quantity"]').value = remaining;
+                updatePreview();
+            } else {
+                poInfo.classList.add('d-none');
+                hiddenField.value = '';
+            }
+        });
+        
+        // Allow switching back from textarea
+        document.getElementById('reasonTextarea').addEventListener('blur', function() {
+            if (this.value === '') {
+                this.classList.add('d-none');
+                document.getElementById('reasonSelect').classList.remove('d-none');
+                document.getElementById('purchaseOrderSection').classList.add('d-none');
+                // Re-enable Remove option
+                document.getElementById('typeRemove').disabled = false;
+            }
+        });
+        
+        // Form validation before submit
+        document.getElementById('adjustForm').addEventListener('submit', function(e) {
+            const poId = document.getElementById('purchaseOrderHidden').value;
+            const adjustmentType = document.querySelector('[name="AdjustmentType"]:checked').value;
+            
+            // If a PO is selected, ensure we're adding stock
+            if (poId && poId !== '' && poId !== '0') {
+                if (adjustmentType !== 'Add') {
+                    e.preventDefault();
+                    alert('Purchase orders must add stock. Please select "Add Stock".');
+                    document.getElementById('typeAdd').checked = true;
+                    updatePreview();
+                    return false;
+                }
+            }
+        });
+    </script>
+}

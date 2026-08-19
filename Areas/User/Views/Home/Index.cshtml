@@ -1,0 +1,183 @@
+﻿@model IEnumerable<LabSupply>
+@{
+    ViewData["Title"] = "Lab Supplies Catalog";
+}
+
+<!-- Hero Section -->
+<div class="bg-light py-5 mb-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">Laboratory Supplies Catalog</h1>
+                <p class="lead text-muted">Browse our complete inventory of laboratory supplies and equipment</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-inline-block">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search supplies...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="container mb-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="stockFilter" id="filterAll" value="all" checked>
+                <label class="btn btn-outline-primary" for="filterAll">
+                    <i class="bi bi-grid"></i> All Supplies
+                </label>
+
+                <input type="radio" class="btn-check" name="stockFilter" id="filterInStock" value="instock">
+                <label class="btn btn-outline-success" for="filterInStock">
+                    <i class="bi bi-check-circle"></i> In Stock
+                </label>
+
+                <input type="radio" class="btn-check" name="stockFilter" id="filterLowStock" value="lowstock">
+                <label class="btn btn-outline-warning" for="filterLowStock">
+                    <i class="bi bi-exclamation-triangle"></i> Low Stock
+                </label>
+
+                <input type="radio" class="btn-check" name="stockFilter" id="filterOutOfStock" value="outofstock">
+                <label class="btn btn-outline-danger" for="filterOutOfStock">
+                    <i class="bi bi-x-circle"></i> Out of Stock
+                </label>
+            </div>
+            <span class="ms-3 text-muted">
+                <span id="resultCount">@Model.Count()</span> supplies found
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Supplies Grid -->
+<div class="container">
+    <div class="row g-4" id="suppliesGrid">
+        @foreach (var supply in Model)
+        {
+            var stockClass = supply.QuantityOnHand == 0 ? "out-of-stock" : supply.NeedsReorder ? "low-stock" : "in-stock";
+            var badgeClass = supply.QuantityOnHand == 0 ? "danger" : supply.NeedsReorder ? "warning" : "success";
+            var stockText = supply.QuantityOnHand == 0 ? "Out of Stock" : supply.NeedsReorder ? "Low Stock" : "In Stock";
+            
+            <div class="col-lg-3 col-md-4 col-sm-6 supply-card-wrapper" data-stock-status="@stockClass" data-supply-name="@supply.SupplyName.ToLower()" data-supplier="@supply.Supplier?.SupplierName?.ToLower()">
+                <div class="card supply-card h-100 shadow-sm">
+                    <!-- Stock Status Badge -->
+                    <div class="position-absolute top-0 start-0 m-2">
+                        <span class="badge bg-@badgeClass">
+                            @stockText
+                        </span>
+                    </div>
+                    
+                    <!-- Image -->
+                    <div class="card-img-wrapper" style="height: 200px; overflow: hidden; background: #f8f9fa;">
+                        <img src="@supply.ImageURL" class="card-img-top" alt="@supply.SupplyName" 
+                             style="width: 100%; height: 100%; object-fit: cover;"
+                             onerror="this.src='/images/supply/default.jpg'">
+                    </div>
+                    
+                    <!-- Card Body -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate" title="@supply.SupplyName">
+                            @supply.SupplyName
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="bi bi-building"></i> @supply.Supplier?.SupplierName
+                            </small>
+                        </div>
+                        
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="text-center p-2 bg-light rounded">
+                                    <small class="text-muted d-block">Available</small>
+                                    <strong class="text-@badgeClass fs-5">@supply.QuantityOnHand</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-2 bg-light rounded">
+                                    <small class="text-muted d-block">Reorder At</small>
+                                    <strong class="fs-5">@supply.ReorderPoint</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto">
+                            <a asp-action="Details" asp-route-id="@supply.SupplyID" 
+                               class="btn btn-primary w-100">
+                                <i class="bi bi-eye"></i> View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-inbox fs-1 text-muted d-block mb-3"></i>
+            <h4 class="text-muted">No supplies found</h4>
+            <p class="text-muted">The catalog is currently empty.</p>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            filterSupplies();
+        });
+        
+        // Filter functionality
+        document.querySelectorAll('[name="stockFilter"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                filterSupplies();
+            });
+        });
+        
+        function filterSupplies() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const stockFilter = document.querySelector('[name="stockFilter"]:checked').value;
+            const cards = document.querySelectorAll('.supply-card-wrapper');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const supplyName = card.dataset.supplyName;
+                const supplier = card.dataset.supplier || '';
+                const stockStatus = card.dataset.stockStatus;
+                
+                // Check search match
+                const matchesSearch = supplyName.includes(searchTerm) || supplier.includes(searchTerm);
+                
+                // Check stock filter
+                let matchesFilter = true;
+                if (stockFilter === 'instock') {
+                    matchesFilter = stockStatus === 'in-stock';
+                } else if (stockFilter === 'lowstock') {
+                    matchesFilter = stockStatus === 'low-stock';
+                } else if (stockFilter === 'outofstock') {
+                    matchesFilter = stockStatus === 'out-of-stock';
+                }
+                
+                // Show/hide card
+                if (matchesSearch && matchesFilter) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Update count
+            document.getElementById('resultCount').textContent = visibleCount;
+        }
+    </script>
+}

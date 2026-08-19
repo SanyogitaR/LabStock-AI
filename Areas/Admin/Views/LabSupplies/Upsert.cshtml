@@ -1,0 +1,80 @@
+﻿    @model LabSupplyVM
+
+
+<form method="post" class="row" enctype="multipart/form-data">
+    <input asp-for="LabSupply.SupplyID" hidden />
+    <input asp-for="LabSupply.ImageURL" hidden />
+    <div class="row">
+        <div class="col-10">
+            <div class="border p-3 mt-4">
+                <div class="row pb-2">
+                    <h2 class="text-primary">@(Model.LabSupply.SupplyID != 0 ? "Update" : "Create") LabSupply</h2>
+                    <hr />
+                </div>
+                <div class="mb-3 row p-1">
+                    <label asp-for="LabSupply.SupplyName" class="p-0"></label>
+                    <input asp-for="LabSupply.SupplyName" class="form-control" />
+                    <span asp-validation-for="LabSupply.SupplyName" class="text-danger"></span>
+
+                </div>
+                <div class="mb-3">
+                    <label asp-for="LabSupply.QuantityOnHand"></label>
+                    <input asp-for="LabSupply.QuantityOnHand" class="form-control" />
+                    <span asp-validation-for="LabSupply.QuantityOnHand" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LabSupply.ReorderPoint"></label>
+                    <input asp-for="LabSupply.ReorderPoint" class="form-control" />
+                    <span asp-validation-for="LabSupply.ReorderPoint" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="LabSupply.ImageURL"></label>
+                    <input type="file" name="file" class="form-control" />
+
+                </div>
+                <div class="mb-3 row p-1">
+                    <label asp-for="LabSupply.SupplierID" class="p-0"></label>
+                    <select asp-for="LabSupply.SupplierID" asp-items="@Model.SupplierList" class="form-select border-0 shadow">
+                        <option disabled selected>--Select Supplier--</option>
+                    </select>
+                    <span asp-validation-for="LabSupply.SupplierID" class="text-danger"></span>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-6 col-md-3">
+                        @if (Model.LabSupply.SupplyID != 0)
+                        {
+                            <button type="submit" class="btn btn-primary form-control">Update</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-primary form-control">Create</button>
+                        }
+
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="LabSupplies" asp-action="Index" class="btn btn-secondary border form-control">
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col-2">
+            <img src="@Model.LabSupply.ImageURL" width="100%"
+                style="border-radius:5px; border: 1px solid #bbb9b9" />
+        </div>
+    </div>
+    
+</form>
+
+@section Scripts{
+    @{
+    <partial name="_ValidationScriptsPartial"/>
+    }
+}
+

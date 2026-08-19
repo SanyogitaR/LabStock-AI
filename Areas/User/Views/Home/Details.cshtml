@@ -1,0 +1,92 @@
+@model LabSupply
+@{
+    ViewData["Title"] = Model.SupplyName;
+    var stockClass = Model.QuantityOnHand == 0 ? "danger" : Model.NeedsReorder ? "warning" : "success";
+    var stockText = Model.QuantityOnHand == 0 ? "Out of Stock" : Model.NeedsReorder ? "Low Stock" : "In Stock";
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a asp-action="Index">
+                    <i class="bi bi-house-door"></i> Catalog
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.SupplyName</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="position-relative">
+                        <img src="@Model.ImageURL" class="img-fluid rounded shadow" alt="@Model.SupplyName"
+                             style="width: 100%; max-height: 400px; object-fit: contain;"
+                             onerror="this.src='/images/supply/default.jpg'">
+                        <span class="position-absolute top-0 end-0 m-3 badge bg-@stockClass fs-6 shadow">
+                            @stockText
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h1 class="display-5 mb-3">@Model.SupplyName</h1>
+                    
+                    <div class="mb-4">
+                        <h6 class="text-muted mb-3">
+                            <i class="bi bi-building"></i> Supplied by
+                        </h6>
+                        <h5>@Model.Supplier?.SupplierName</h5>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-box-seam text-primary fs-1 d-block mb-2"></i>
+                                    <h6 class="text-muted mb-2">Available Quantity</h6>
+                                    <h2 class="text-@stockClass mb-0">@Model.QuantityOnHand</h2>
+                                    <small class="text-muted">units</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-arrow-repeat text-warning fs-1 d-block mb-2"></i>
+                                    <h6 class="text-muted mb-2">Reorder Point</h6>
+                                    <h2 class="mb-0">@Model.ReorderPoint</h2>
+                                    <small class="text-muted">units</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light border-0">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-graph-up text-info fs-1 d-block mb-2"></i>
+                                    <h6 class="text-muted mb-2">Stock Level</h6>
+                                    <h2 class="mb-0">@((Model.QuantityOnHand * 100 / Math.Max(Model.ReorderPoint, 1)).ToString("F0"))%</h2>
+                                    <small class="text-muted">of reorder point</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-action="Index" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left"></i> Back to Catalog
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

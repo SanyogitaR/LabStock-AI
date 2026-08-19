@@ -1,0 +1,113 @@
+@{
+    ViewData["Title"] = "Stock Adjustment";
+    var supplies = ViewBag.Supplies as IEnumerable<LabSupply>;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="bi bi-arrow-left-right"></i> Stock Adjustment
+                    </h3>
+                    <p class="text-muted mb-0 mt-2">Select a supply to adjust inventory levels</p>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Search Supply</label>
+                        <input type="text" id="searchSupply" class="form-control form-control-lg" 
+                               placeholder="Type to search supplies...">
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="supplyTable">
+                            <thead>
+                                <tr>
+                                    <th>Supply Name</th>
+                                    <th>Supplier</th>
+                                    <th>Current Stock</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (supplies != null && supplies.Any())
+                                {
+                                    @foreach (var supply in supplies)
+                                    {
+                                        <tr class="supply-row @(supply.QuantityOnHand == 0 ? "out-of-stock" : supply.NeedsReorder ? "low-stock" : "")">
+                                            <td>
+                                                <strong>@supply.SupplyName</strong>
+                                            </td>
+                                            <td>@supply.Supplier?.SupplierName</td>
+                                            <td>
+                                                <span class="badge bg-@(supply.QuantityOnHand == 0 ? "danger" : supply.NeedsReorder ? "warning" : "success")">
+                                                    @supply.QuantityOnHand
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (supply.QuantityOnHand == 0)
+                                                {
+                                                    <span class="text-danger">
+                                                        <i class="bi bi-x-circle-fill"></i> Out of Stock
+                                                    </span>
+                                                }
+                                                else if (supply.NeedsReorder)
+                                                {
+                                                    <span class="text-warning">
+                                                        <i class="bi bi-exclamation-triangle-fill"></i> Low Stock
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-success">
+                                                        <i class="bi bi-check-circle-fill"></i> In Stock
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-action="Index" asp-route-id="@supply.SupplyID" 
+                                                   class="btn btn-primary btn-sm">
+                                                    <i class="bi bi-pencil"></i> Adjust
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            No supplies found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Index" asp-controller="Dashboard" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Search functionality
+        document.getElementById('searchSupply').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#supplyTable tbody tr.supply-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+    </script>
+}
