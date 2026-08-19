@@ -10,19 +10,19 @@ The **functional user interface (UI) of the web application** has been set up an
 
 ### Home Page
 
-![LabStock AI Home Page](Images/home.png)
+![LabStock AI Home Page](images/image1.png)
 
 ### Dashboard
 
-![LabStock AI Dashboard](Images/dashboard.png)
+![LabStock AI Dashboard](images/image2.png)
 
 ### Inventory Management
 
-![Inventory Management](Images/inventory.png)
+![Inventory Management](images/image3.png)
 
 ### Login Page
 
-![Login Page](Images/login.png)
+![Login Page](images/image4.png)
 
 > **Note:** The screenshots above show the current working interface. More screenshots and features will be added as development progresses.
 
