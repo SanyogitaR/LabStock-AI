@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Admin Dashboard";
 }
 
 <div class="container-fluid py-4">
@@ -7,13 +7,18 @@
     <!-- Dashboard Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="fw-bold mb-1">Dashboard</h1>
+            <h1 class="fw-bold mb-1">
+                <i class="bi bi-speedometer2"></i>
+                Admin Dashboard
+            </h1>
+
             <p class="text-muted mb-0">
                 Laboratory Inventory Management Overview
             </p>
         </div>
 
         <span class="badge bg-success px-3 py-2">
+            <i class="bi bi-check-circle"></i>
             System Active
         </span>
     </div>
@@ -24,13 +29,15 @@
 
         <!-- Total Supplies -->
         <div class="col-md-6 col-xl-3">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
+
                     <div class="d-flex justify-content-between align-items-center">
+
                         <div>
-                            <h6 class="text-muted mb-2">
+                            <p class="text-muted mb-1">
                                 Total Supplies
-                            </h6>
+                            </p>
 
                             <h2 class="fw-bold mb-1">
                                 @ViewBag.TotalSupplies
@@ -44,7 +51,9 @@
                         <div class="fs-1">
                             📦
                         </div>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -52,15 +61,17 @@
 
         <!-- Low Stock -->
         <div class="col-md-6 col-xl-3">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">
-                                Low Stock
-                            </h6>
 
-                            <h2 class="fw-bold mb-1">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Low Stock
+                            </p>
+
+                            <h2 class="fw-bold text-warning mb-1">
                                 @ViewBag.LowStock
                             </h2>
 
@@ -72,7 +83,9 @@
                         <div class="fs-1">
                             ⚠️
                         </div>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -80,13 +93,15 @@
 
         <!-- Suppliers -->
         <div class="col-md-6 col-xl-3">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
+
                     <div class="d-flex justify-content-between align-items-center">
+
                         <div>
-                            <h6 class="text-muted mb-2">
+                            <p class="text-muted mb-1">
                                 Total Suppliers
-                            </h6>
+                            </p>
 
                             <h2 class="fw-bold mb-1">
                                 @ViewBag.TotalSuppliers
@@ -100,7 +115,9 @@
                         <div class="fs-1">
                             🏢
                         </div>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -108,15 +125,17 @@
 
         <!-- Pending Orders -->
         <div class="col-md-6 col-xl-3">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-muted mb-2">
-                                Pending Orders
-                            </h6>
 
-                            <h2 class="fw-bold mb-1">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Pending Orders
+                            </p>
+
+                            <h2 class="fw-bold text-primary mb-1">
                                 @ViewBag.PendingOrders
                             </h2>
 
@@ -128,7 +147,9 @@
                         <div class="fs-1">
                             🛒
                         </div>
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -136,16 +157,17 @@
     </div>
 
 
-    <!-- Main Dashboard Content -->
+    <!-- Inventory + Quick Actions -->
     <div class="row g-4">
 
         <!-- Inventory Overview -->
         <div class="col-lg-8">
 
-            <div class="card shadow-sm border-0">
+            <div class="card border-0 shadow-sm">
 
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-box-seam"></i>
                         Inventory Overview
                     </h5>
                 </div>
@@ -168,9 +190,18 @@
                             <tbody>
 
                                 <tr>
-                                    <td>Laboratory Gloves</td>
-                                    <td>Safety Equipment</td>
-                                    <td>250</td>
+                                    <td>
+                                        <strong>Laboratory Gloves</strong>
+                                    </td>
+
+                                    <td>
+                                        Safety Equipment
+                                    </td>
+
+                                    <td>
+                                        250
+                                    </td>
+
                                     <td>
                                         <span class="badge bg-success">
                                             Available
@@ -178,10 +209,20 @@
                                     </td>
                                 </tr>
 
+
                                 <tr>
-                                    <td>Test Tubes</td>
-                                    <td>Laboratory Equipment</td>
-                                    <td>80</td>
+                                    <td>
+                                        <strong>Test Tubes</strong>
+                                    </td>
+
+                                    <td>
+                                        Laboratory Equipment
+                                    </td>
+
+                                    <td>
+                                        80
+                                    </td>
+
                                     <td>
                                         <span class="badge bg-success">
                                             Available
@@ -189,10 +230,20 @@
                                     </td>
                                 </tr>
 
+
                                 <tr>
-                                    <td>Reagent Kits</td>
-                                    <td>Reagents</td>
-                                    <td>8</td>
+                                    <td>
+                                        <strong>Reagent Kits</strong>
+                                    </td>
+
+                                    <td>
+                                        Reagents
+                                    </td>
+
+                                    <td>
+                                        8
+                                    </td>
+
                                     <td>
                                         <span class="badge bg-danger">
                                             Low Stock
@@ -200,10 +251,20 @@
                                     </td>
                                 </tr>
 
+
                                 <tr>
-                                    <td>Syringes</td>
-                                    <td>Medical Supplies</td>
-                                    <td>45</td>
+                                    <td>
+                                        <strong>Syringes</strong>
+                                    </td>
+
+                                    <td>
+                                        Medical Supplies
+                                    </td>
+
+                                    <td>
+                                        45
+                                    </td>
+
                                     <td>
                                         <span class="badge bg-warning text-dark">
                                             Attention
@@ -227,29 +288,41 @@
         <!-- Quick Actions -->
         <div class="col-lg-4">
 
-            <div class="card shadow-sm border-0">
+            <div class="card border-0 shadow-sm">
 
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-lightning-charge"></i>
                         Quick Actions
                     </h5>
                 </div>
 
                 <div class="card-body">
 
-                    <a href="#" class="btn btn-primary w-100 mb-3">
+                    <a href="/Admin/LabSupplies"
+                       class="btn btn-primary w-100 mb-3">
+                        <i class="bi bi-box-seam"></i>
                         Manage Supplies
                     </a>
 
-                    <a href="#" class="btn btn-outline-primary w-100 mb-3">
+
+                    <a href="/Admin/Suppliers"
+                       class="btn btn-outline-primary w-100 mb-3">
+                        <i class="bi bi-building"></i>
                         Manage Suppliers
                     </a>
 
-                    <a href="#" class="btn btn-outline-primary w-100 mb-3">
+
+                    <a href="/User/PurchaseOrders"
+                       class="btn btn-outline-primary w-100 mb-3">
+                        <i class="bi bi-cart"></i>
                         Purchase Orders
                     </a>
 
-                    <a href="#" class="btn btn-outline-secondary w-100">
+
+                    <a href="/Admin/StockAdjustment"
+                       class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-arrow-left-right"></i>
                         Stock Adjustment
                     </a>
 
@@ -258,20 +331,80 @@
             </div>
 
 
-            <!-- Alert Card -->
-            <div class="card shadow-sm border-0 mt-4">
+            <!-- Inventory Alert -->
+            <div class="card border-0 shadow-sm mt-4">
 
                 <div class="card-body">
 
-                    <h6 class="fw-bold">
-                        ⚠️ Inventory Alert
+                    <h6 class="fw-bold text-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Inventory Alert
                     </h6>
 
                     <p class="text-muted mb-0">
+
                         There are currently
-                        <strong>@ViewBag.LowStock</strong>
-                        laboratory supplies below their reorder level.
+
+                        <strong>
+                            @ViewBag.LowStock
+                        </strong>
+
+                        laboratory supplies below their
+                        reorder level.
+
                     </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Dashboard Footer Information -->
+    <div class="row mt-4">
+
+        <div class="col-12">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="row text-center">
+
+                        <div class="col-md-4">
+                            <h6 class="text-muted">
+                                Inventory Monitoring
+                            </h6>
+
+                            <p class="mb-0">
+                                Monitor laboratory supplies and stock levels.
+                            </p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h6 class="text-muted">
+                                Supplier Management
+                            </h6>
+
+                            <p class="mb-0">
+                                Keep track of registered suppliers.
+                            </p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h6 class="text-muted">
+                                Purchase Management
+                            </h6>
+
+                            <p class="mb-0">
+                                Monitor pending purchase orders.
+                            </p>
+                        </div>
+
+                    </div>
 
                 </div>
 
