@@ -1,4 +1,4 @@
-﻿using Inventory.DataAccess.Repository.IRepository;
+using Inventory.DataAccess.Repository.IRepository;
 using Inventory.Models.Models;
 using Inventory.Models.ViewModels;
 using Inventory.Utility;
