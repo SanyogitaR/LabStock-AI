@@ -4,14 +4,11 @@ using Inventory.Models.Models;
 
 namespace Inventory.DataAccess.Repository
 {
-    /// <summary>
-    /// Repository implementation for LabSupply-specific data operations.
-    /// </summary>
     public class LabSupplyRepository : Repository<LabSupply>, ILabSupplyRepository
     {
-        private readonly ApplicationDbContext _db;
+        private readonly AppDbContext _db;
 
-        public LabSupplyRepository(ApplicationDbContext db) : base(db)
+        public LabSupplyRepository(AppDbContext db) : base(db)
         {
             _db = db;
         }
