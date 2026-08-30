@@ -2,8 +2,10 @@ using Inventory.DataAccess.Data;
 using Inventory.DataAccess.Repository;
 using Inventory.DataAccess.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using InventoryManagement.Services;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -91,6 +93,9 @@ try
 
     // Unit of Work
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+    // Email sender for local development
+    builder.Services.AddTransient<IEmailSender, EmailSender>();
 
     var app = builder.Build();
 
