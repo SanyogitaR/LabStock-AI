@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
-// Configure Serilog
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
@@ -25,13 +24,10 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
-    // Serilog
     builder.Host.UseSerilog();
 
-    // MVC
     builder.Services.AddControllersWithViews();
 
-    // Database
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(
             builder.Configuration.GetConnectionString(
@@ -44,14 +40,11 @@ try
                 )
         ));
 
-    // Razor Pages
     builder.Services.AddRazorPages();
 
-    // Identity
     builder.Services
         .AddIdentity<IdentityUser, IdentityRole>(options =>
         {
-            // Password settings
             options.Password.RequireDigit = true;
             options.Password.RequireLowercase = true;
             options.Password.RequireNonAlphanumeric = true;
@@ -59,42 +52,34 @@ try
             options.Password.RequiredLength = 8;
             options.Password.RequiredUniqueChars = 1;
 
-            // Lockout settings
             options.Lockout.DefaultLockoutTimeSpan =
                 TimeSpan.FromMinutes(5);
-
             options.Lockout.MaxFailedAccessAttempts = 5;
             options.Lockout.AllowedForNewUsers = true;
 
-            // User settings
             options.User.AllowedUserNameCharacters =
                 "abcdefghijklmnopqrstuvwxyz" +
                 "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
                 "0123456789-._@+";
-
             options.User.RequireUniqueEmail = true;
         })
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
-    // Application cookie
     builder.Services.ConfigureApplicationCookie(options =>
     {
         options.LoginPath = "/Identity/Account/Login";
         options.LogoutPath = "/Identity/Account/Logout";
         options.AccessDeniedPath =
             "/Identity/Account/AccessDenied";
-
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
     });
 
-    // Unit of Work
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
     var app = builder.Build();
 
-    // HTTP request pipeline
     if (app.Environment.IsDevelopment())
     {
         app.UseDeveloperExceptionPage();
@@ -106,28 +91,20 @@ try
     }
 
     app.UseHttpsRedirection();
-
     app.UseStaticFiles();
-
     app.UseSerilogRequestLogging();
-
     app.UseRouting();
-
     app.UseAuthentication();
-
     app.UseAuthorization();
 
-    // Razor Pages
     app.MapRazorPages();
-
-    // MVC route
+    app.MapControllers();
     app.MapControllerRoute(
         name: "default",
         pattern:
             "{area=User}/{controller=Home}/{action=Index}/{id?}");
 
     Log.Information("Application started successfully");
-
     app.Run();
 }
 catch (Exception ex)
