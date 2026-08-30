@@ -1,6 +1,9 @@
-﻿namespace InventoryManagement.Inventory.DataAccess.Repository.IRepository
+﻿using Inventory.Models.Models;
+
+namespace Inventory.DataAccess.Repository.IRepository
 {
-    public class IPurchaseOrderRepository
+    public interface IPurchaseOrderRepository : IRepository<PurchaseOrder>
     {
+        void Update(PurchaseOrder obj);
     }
 }

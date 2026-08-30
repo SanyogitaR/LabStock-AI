@@ -35,5 +35,14 @@ namespace Inventory.Models.Models
 
         [ForeignKey("SupplierID")]
         public Supplier? Supplier { get; set; }
+
+        [NotMapped]
+        public bool NeedsReorder
+        {
+            get
+            {
+                return QuantityOnHand <= ReorderPoint;
+            }
+        }
     }
 }
