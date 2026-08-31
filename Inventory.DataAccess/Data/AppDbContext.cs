@@ -12,8 +12,11 @@ namespace Inventory.DataAccess.Data
     /// </summary>
     public class AppDbContext : IdentityDbContext<IdentityUser>
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-            : base(options)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AppDbContext"/> class.
+        /// </summary>
+        /// <param name="options">The options to be used by the DbContext.</param>
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
@@ -28,7 +31,7 @@ namespace Inventory.DataAccess.Data
         public DbSet<Supplier> Suppliers { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the DbSet for application users.
+        /// Gets or sets the DbSet for application users (extended Identity users).
         /// </summary>
         public DbSet<ApplicationUser> ApplicationUsers { get; set; } = null!;
 
@@ -38,8 +41,39 @@ namespace Inventory.DataAccess.Data
         public DbSet<PurchaseOrder> PurchaseOrders { get; set; } = null!;
 
         /// <summary>
-        /// Gets or sets the DbSet for purchase order items.
+        /// Configures the schema needed for the application entities and Identity.
         /// </summary>
-        public DbSet<PurchaseOrderItem> PurchaseOrderItems { get; set; } = null!;
+        /// <param name="modelBuilder">The builder being used to construct the model for this context.</param>
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Configure entity relationships and constraints
+
+            // LabSupply - Supplier relationship
+            modelBuilder.Entity<LabSupply>()
+                .HasOne(l => l.Supplier)
+                .WithMany(s => s.LabSupplies)
+                .HasForeignKey(l => l.SupplierID)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            // PurchaseOrder - LabSupply relationship
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasOne(p => p.LabSupply)
+                .WithMany(l => l.PurchaseOrders)
+                .HasForeignKey(p => p.SupplyID)
+                .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
+
+            // Configure indexes for better query performance
+            modelBuilder.Entity<LabSupply>()
+                .HasIndex(l => l.SupplyName);
+
+            modelBuilder.Entity<Supplier>()
+                .HasIndex(s => s.ContactEmail)
+                .IsUnique();
+
+            modelBuilder.Entity<PurchaseOrder>()
+                .HasIndex(p => p.OrderDate);
+        }
     }
 }
