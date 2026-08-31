@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "AI Inventory Advisor";
+}
+
+<div class="container mt-4">
+
+    <h2>AI Inventory Advisor</h2>
+
+    <p class="text-muted">
+        Enter a laboratory supply name to get an AI-powered inventory recommendation.
+    </p>
+
+    <div class="card p-4">
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Product Name
+            </label>
+
+            <input id="productName"
+                   class="form-control"
+                   placeholder="Example: Microscope Slides" />
+
+        </div>
+
+        <button class="btn btn-primary"
+                onclick="getAIAdvice()">
+
+            GET AI RECOMMENDATION
+
+        </button>
+
+    </div>
+
+    <div id="loading"
+         class="alert alert-info mt-3"
+         style="display:none;">
+
+        AI is analyzing the inventory...
+
+    </div>
+
+    <div id="result"
+         class="alert alert-success mt-3"
+         style="display:none;">
+    </div>
+
+</div>
+
+<script>
+
+    async function getAIAdvice() {
+
+        const productName =
+            document.getElementById("productName").value.trim();
+
+        if (!productName) {
+
+            alert("Please enter a product name.");
+
+            return;
+        }
+
+        document.getElementById("loading").style.display =
+            "block";
+
+        document.getElementById("result").style.display =
+            "none";
+
+        try {
+
+            const response = await fetch(
+                "/api/ai/inventory-advice",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        productName: productName
+                    })
+                }
+            );
+
+            const data =
+                await response.json();
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "AI request failed."
+                );
+            }
+
+            document.getElementById("result").className =
+                "alert alert-success mt-3";
+
+            document.getElementById("result").innerHTML =
+
+                "<strong>Product:</strong> " +
+                data.product +
+                "<br><br>" +
+
+                "<strong>Current Stock:</strong> " +
+                data.currentStock +
+                "<br>" +
+
+                "<strong>Reorder Point:</strong> " +
+                data.reorderPoint +
+                "<br><br>" +
+
+                "<strong>AI Recommendation:</strong><br>" +
+                data.recommendation;
+
+            document.getElementById("result").style.display =
+                "block";
+
+        }
+        catch (error) {
+
+            document.getElementById("result").className =
+                "alert alert-danger mt-3";
+
+            document.getElementById("result").innerHTML =
+
+                "<strong>Error:</strong> " +
+                error.message;
+
+            document.getElementById("result").style.display =
+                "block";
+        }
+
+        document.getElementById("loading").style.display =
+            "none";
+    }
+
+</script>
