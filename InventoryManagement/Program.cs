@@ -28,6 +28,8 @@ try
     // Add services to the container
     builder.Services.AddControllersWithViews();
 
+    builder.Services.AddHttpClient();
+
     // Configure Database Context
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(
@@ -114,9 +116,16 @@ try
     app.UseAuthorization();
 
     app.MapRazorPages();
+
+    app.MapControllers();
+
+    app.MapControllerRoute(
+        name: "areas",
+        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
     app.MapControllerRoute(
         name: "default",
-        pattern: "{area=User}/{controller=Home}/{action=Index}/{id?}");
+        pattern: "{controller=Home}/{action=Index}/{id?}");
 
     Log.Information("Application started successfully");
     app.Run();
