@@ -21,14 +21,14 @@ namespace InventoryManagement.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        // GET: /Admin/AI
+     
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
-        // POST: /api/ai/inventory-advice
+        
         [HttpPost]
         [Route("/api/ai/inventory-advice")]
         public async Task<IActionResult> InventoryAdvice(
@@ -43,14 +43,14 @@ namespace InventoryManagement.Areas.Admin.Controllers
                 });
             }
 
-            // Find the product in the existing inventory database
+            
             var productName = request.ProductName.Trim().ToLower();
 
             var supply = await _unitOfWork.LabSupply.GetAsync(
                 u => u.SupplyName.ToLower() == productName
             );
 
-            // Product not found
+           
             if (supply == null)
             {
                 return NotFound(new
@@ -59,11 +59,11 @@ namespace InventoryManagement.Areas.Admin.Controllers
                 });
             }
 
-            // Get the actual values from the database
+           
             int currentStock = supply.QuantityOnHand;
             int reorderPoint = supply.ReorderPoint;
 
-            // Get Gemini API key
+            
             var apiKey =
                 Environment.GetEnvironmentVariable("GEMINI_API_KEY");
 
@@ -75,7 +75,7 @@ namespace InventoryManagement.Areas.Admin.Controllers
                 });
             }
 
-            // Create prompt for Gemini
+           
             var prompt = $"""
                 You are an AI inventory assistant for a laboratory inventory management system.
 
@@ -99,7 +99,7 @@ namespace InventoryManagement.Areas.Admin.Controllers
                 Keep the response under 100 words.
                 """;
 
-            // Gemini request
+            
             var payload = new
             {
                 contents = new[]
@@ -137,13 +137,13 @@ namespace InventoryManagement.Areas.Admin.Controllers
                 Encoding.UTF8,
                 "application/json");
 
-            // Call Gemini
+            
             var response = await client.SendAsync(requestMessage);
 
             var responseBody =
                 await response.Content.ReadAsStringAsync();
 
-            // Gemini error
+          
             if (!response.IsSuccessStatusCode)
             {
                 return StatusCode(
@@ -155,7 +155,7 @@ namespace InventoryManagement.Areas.Admin.Controllers
                     });
             }
 
-            // Parse Gemini response
+           
             using var document =
                 JsonDocument.Parse(responseBody);
 
@@ -196,7 +196,7 @@ namespace InventoryManagement.Areas.Admin.Controllers
                 });
             }
 
-            // Send result back to the webpage
+          
             return Ok(new
             {
                 product = supply.SupplyName,
