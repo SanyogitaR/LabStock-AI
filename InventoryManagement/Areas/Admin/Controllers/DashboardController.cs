@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryManagement.Areas.Admin.Controllers
 {
-    /// <summary>
-    /// Controller for the admin dashboard with key inventory metrics.
-    /// </summary>
     [Area("Admin")]
     [Authorize]
     public class DashboardController : Controller
@@ -22,9 +19,7 @@ namespace InventoryManagement.Areas.Admin.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        /// <summary>
-        /// Displays the admin dashboard with key metrics and insights.
-        /// </summary>
+        
         public async Task<IActionResult> Index()
         {
             try
