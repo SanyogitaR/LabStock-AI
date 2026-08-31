@@ -42,8 +42,4 @@ The repository contains documentation for:
 - **Authentication:** ASP.NET Core Identity
 - **Version Control:** Git and GitHub
 
-## Project Status
 
-**Current Status:** Functional web application UI and initial project documentation completed.
-
-Further functionality, testing, UI improvements, and project specific features will be added as development continues.
